@@ -1,5 +1,23 @@
 .App {
   text-align: center;
+  width: 105vw;
+  height: 105vh;
+  position: fixed;
+  z-index: 2;
+}
+
+.container {
+  z-index: -4;
+  background-color: #fff;
+  width: 105vw;
+  height: 105vh;
+  position: fixed;
+  background-image: url("assets/background.jpg");
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+  opacity: 0.4;
 }
 
 .App-logo {

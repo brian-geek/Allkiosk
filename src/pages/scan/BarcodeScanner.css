@@ -82,9 +82,9 @@
 }
 @keyframes dbrScanner-scanlight {
   from {
-    top: 0;
+    top: 14%;
   }
   to {
-    top: 97%;
+    top: 60%;
   }
 }

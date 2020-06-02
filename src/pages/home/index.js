@@ -1,7 +1,7 @@
 import React from "react";
 import Grid from "@material-ui/core/Grid";
-import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core/styles";
+import { Typography } from "@material-ui/core";
 
 const styles = {
   logo: {
@@ -9,25 +9,28 @@ const styles = {
     marginTop: "50px",
     cursor: "pointer",
   },
-  btn: {
-    height: "125px",
+  layout: {
+    height: "110vh",
     backgroundColor: "#3f51b5",
+    opacity: 0.9,
+    cursor: "pointer",
+  },
+  titleText: {
+    color: "#fff",
+    fontSize: "70px",
+    fontWeight: 800,
+  },
+  bottomText: {
     color: "#fff",
     fontSize: "35px",
-    borderRadius: "25px",
-  },
-  layout: {
-    height: "80vh",
+    fontWeight: 500,
   },
 };
 
 const useStyles = makeStyles(styles);
 
-const Main = ({ history, userIsIdle }) => {
+const HomePage = ({ history }) => {
   const classes = useStyles();
-  if (userIsIdle) {
-    history.push("/");
-  }
   return (
     <>
       <Grid
@@ -54,31 +57,19 @@ const Main = ({ history, userIsIdle }) => {
           justify="column"
           alignItems="center"
           className={classes.layout}
+          onClick={() => history.push("/main")}
         >
           <Grid item container xs={12} justify="center">
-            <Grid item xs={9}>
-              <Button
-                variant="contained"
-                size="large"
-                className={classes.btn}
-                onClick={() => history.push("/scan")}
-                fullWidth
-              >
-                Scan Barcode
-              </Button>
+            <Grid item>
+              <Typography className={classes.titleText}>JURY DUTY</Typography>
+              <Typography className={classes.titleText}>CHECK-IN</Typography>
             </Grid>
           </Grid>
           <Grid item container xs={12} justify="center">
-            <Grid item xs={9}>
-              <Button
-                variant="contained"
-                size="large"
-                className={classes.btn}
-                onClick={() => history.push("/search")}
-                fullWidth
-              >
-                Search By ID
-              </Button>
+            <Grid item>
+              <Typography className={classes.bottomText}>
+                TAP HERE TO CONTINUE
+              </Typography>
             </Grid>
           </Grid>
         </Grid>
@@ -87,4 +78,4 @@ const Main = ({ history, userIsIdle }) => {
   );
 };
 
-export default Main;
+export default HomePage;
