@@ -12,6 +12,7 @@ import { createBrowserHistory } from "history";
 import Main from "./pages/main";
 import Search from "./pages/search";
 import HomePage from "./pages/home";
+import Settings from "./pages/settings";
 import "./App.css";
 
 const history = createBrowserHistory();
@@ -73,6 +74,12 @@ function App() {
                   userIsIdle={userIsIdle}
                   setIsTimeOut={setIsTimeOut}
                 />
+              )}
+            />
+            <Route
+              path="/settings"
+              render={(props) => (
+                <Settings {...props} userIsIdle={userIsIdle} />
               )}
             />
             <Route

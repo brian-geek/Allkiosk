@@ -46,11 +46,41 @@
   color: #61dafb;
 }
 
+.gear {
+  float: none;
+  text-align: center;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-direction: normal;
+  animation-delay: 0;
+  animation-play-state: running;
+  animation-fill-mode: forwards;
+}
+
+#gear2 {
+  background: url("./assets/g2.png") no-repeat 0 0;
+  height: 125px;
+  width: 125px;
+  animation-name: ckw;
+  animation-duration: 16.84s;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes ckw {
+  0% {
+    -moz-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -moz-transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
   }
 }

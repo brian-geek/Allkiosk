@@ -11,9 +11,13 @@ const styles = {
   },
   layout: {
     height: "110vh",
+    width: "100%",
     backgroundColor: "#3f51b5",
     opacity: 0.9,
     cursor: "pointer",
+  },
+  container: {
+    height: "100vh",
   },
   titleText: {
     color: "#fff",
@@ -49,29 +53,47 @@ const HomePage = ({ history }) => {
               onClick={() => history.push("/")}
             />
           </Grid>
+          <Grid item container xs={12} justify="center" alignItems="center">
+            <Grid item>
+              <div
+                className="gear"
+                id="gear2"
+                style={{ cursor: "pointer" }}
+                onClick={() => history.push("/settings")}
+              />
+            </Grid>
+          </Grid>
         </Grid>
-        <Grid
-          container
-          item
-          xs={9}
-          justify="column"
-          alignItems="center"
-          className={classes.layout}
-          onClick={() => history.push("/main")}
-        >
-          <Grid item container xs={12} justify="center">
-            <Grid item>
-              <Typography className={classes.titleText}>JURY DUTY</Typography>
-              <Typography className={classes.titleText}>CHECK-IN</Typography>
+        <Grid item container xs={9}>
+          <div className={classes.layout}>
+            <Grid
+              container
+              item
+              xs={12}
+              justify="column"
+              alignItems="center"
+              className={classes.container}
+              onClick={() => history.push("/main")}
+            >
+              <Grid item container xs={12} justify="center">
+                <Grid item>
+                  <Typography className={classes.titleText}>
+                    JURY DUTY
+                  </Typography>
+                  <Typography className={classes.titleText}>
+                    CHECK-IN
+                  </Typography>
+                </Grid>
+              </Grid>
+              <Grid item container xs={12} justify="center">
+                <Grid item>
+                  <Typography className={classes.bottomText}>
+                    TAP HERE TO CONTINUE
+                  </Typography>
+                </Grid>
+              </Grid>
             </Grid>
-          </Grid>
-          <Grid item container xs={12} justify="center">
-            <Grid item>
-              <Typography className={classes.bottomText}>
-                TAP HERE TO CONTINUE
-              </Typography>
-            </Grid>
-          </Grid>
+          </div>
         </Grid>
       </Grid>
     </>
