@@ -12,30 +12,31 @@ import { createBrowserHistory } from "history";
 import Main from "./pages/main";
 import Search from "./pages/search";
 import HomePage from "./pages/home";
+import AdminLogIn from "./pages/login";
 import Settings from "./pages/settings";
 import "./App.css";
 
 const history = createBrowserHistory();
 
 function App() {
-  const [timeOut, handleTimeOut] = useState(1000 * 60 * 1);
+  const [timeOut, handleTimeOut] = useState(1000 * 120 * 1);
   const [isTimeOut, setIsTimeOut] = useState(false);
   const [userIsIdle, setUserIsIdle] = useState(false);
   const onAction = (e) => {
-    console.log("user did something", e);
+    // console.log("user did something", e);
     setIsTimeOut(false);
     setUserIsIdle(false);
   };
 
   let idleTimer = null;
   const onActive = (e) => {
-    console.log("user is active", e);
+    // console.log("user is active", e);
     setIsTimeOut(false);
     setUserIsIdle(false);
   };
 
   const onIdle = (e) => {
-    console.log("user is idle", e);
+    // console.log("user is idle", e);
     const isTimedOut = isTimeOut;
     if (isTimedOut) {
       setUserIsIdle(true);
@@ -77,14 +78,18 @@ function App() {
               )}
             />
             <Route
-              path="/settings"
-              render={(props) => (
-                <Settings {...props} userIsIdle={userIsIdle} />
-              )}
-            />
-            <Route
               path="/search"
               render={(props) => <Search {...props} userIsIdle={userIsIdle} />}
+            />
+            <Route
+              path="/settings"
+              render={(props) =>
+                localStorage.allkiosk_token ? (
+                  <Settings {...props} userIsIdle={userIsIdle} />
+                ) : (
+                  <AdminLogIn {...props} userIsIdle={userIsIdle} />
+                )
+              }
             />
             <Route path="/" render={(props) => <HomePage {...props} />} />
           </Switch>

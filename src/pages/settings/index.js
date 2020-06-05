@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Grid from "@material-ui/core/Grid";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
-import ArrowForwardIcon from "@material-ui/icons/ArrowForward";
+import Slider from "@material-ui/core/Slider";
+// import TextField from "@material-ui/core/TextField";
+import EditIcon from "@material-ui/icons/Edit";
+import ForwardIcon from "@material-ui/icons/Forward";
+import IconButton from "@material-ui/core/IconButton";
 
 const styles = {
   logo: {
@@ -23,33 +25,65 @@ const styles = {
     fontSize: "35px",
     fontWeight: 500,
   },
-  subHeaderText: {
+  contentText: {
     color: "#fff",
-    fontSize: "25px",
-    fontWeight: 400,
-  },
-  textField: {
     fontWeight: 500,
-    fontSize: 21,
-    backgroundColor: "#fff",
-    borderRadius: "15px",
+    fontSize: "18px",
   },
-  formText: {
+  settingsText: {
     color: "#fff",
+    fontWeight: 500,
+    fontSize: "21px",
   },
-  buttonText: {
-    marginLeft: 5,
-    fontSize: 15,
+  forwardIcon: {
+    color: "#fff",
+    fontSize: "28px",
+  },
+  sliderText: {
+    color: "#fff",
   },
 };
+
+const PrettoSlider = withStyles({
+  root: {
+    color: "#52af77",
+    height: 8,
+  },
+  thumb: {
+    height: 24,
+    width: 24,
+    backgroundColor: "#fff",
+    border: "2px solid currentColor",
+    marginTop: -8,
+    marginLeft: -12,
+    "&:focus, &:hover, &$active": {
+      boxShadow: "inherit",
+    },
+  },
+  active: {},
+  valueLabel: {
+    left: "calc(-50% + 4px)",
+  },
+  track: {
+    height: 8,
+    borderRadius: 4,
+  },
+  rail: {
+    height: 8,
+    borderRadius: 4,
+  },
+})(Slider);
 
 const useStyles = makeStyles(styles);
 
 const Settings = ({ history, userIsIdle }) => {
   const classes = useStyles();
+
   if (userIsIdle) {
     history.push("/");
+    localStorage.removeItem("allkiosk_token");
   }
+
   return (
     <>
       <Grid
@@ -73,60 +107,240 @@ const Settings = ({ history, userIsIdle }) => {
           <div className={classes.layout}>
             <Grid container item xs={12} alignItems="center" spacing="10">
               <Grid item container xs={12} justify="center">
-                <Grid item>
-                  <br />
-                  <br />
-                  <br />
-                  <Typography className={classes.headerText}>
-                    SETTINGS
-                  </Typography>
-                </Grid>
-              </Grid>
-              <Grid item container xs={12} justify="center">
-                <Grid item>
-                  <br />
-                  <Typography className={classes.subHeaderText}>
-                    ADMIN REQUIRED
-                  </Typography>
-                </Grid>
-              </Grid>
-              <Grid item container xs={12} direction="column" spacing="5">
                 <Grid item container xs={12} justify="center">
-                  <Grid item xs={5}>
-                    <Typography variant="h6" className={classes.formText}>
-                      User Name
-                    </Typography>
+                  <Grid item>
                     <br />
-                    <TextField
-                      variant="outlined"
-                      type="text"
-                      InputProps={{ className: classes.textField }}
-                      fullWidth
-                    />
-                  </Grid>
-                </Grid>
-                <Grid item container xs={12} justify="center">
-                  <Grid item xs={5}>
-                    <Typography variant="h6" className={classes.formText}>
-                      Password
-                    </Typography>
                     <br />
-                    <TextField
-                      variant="outlined"
-                      type="text"
-                      InputProps={{ className: classes.textField }}
-                      fullWidth
-                    />
+                    <br />
+                    <Typography className={classes.headerText}>
+                      SETTINGS
+                    </Typography>
                   </Grid>
                 </Grid>
               </Grid>
-              <Grid item container xs={12} justify="center">
-                <Button variant="contained" size="large" color="primary" disabled>
-                  <Typography className={classes.buttonText}>
-                    Add New Customer
-                  </Typography>
-                  <ArrowForwardIcon />
-                </Button>
+              <Grid item container xs={12} alignItems="center" spacing="8">
+                <Grid
+                  item
+                  container
+                  xs={12}
+                  justify="space-between"
+                  alignItems="flex-start"
+                  spacing="2"
+                >
+                  <Grid item xs={2} />
+                  <Grid item xs={3}>
+                    <Typography className={classes.settingsText} align="left">
+                      Idle Timer
+                    </Typography>
+                  </Grid>
+                  <Grid item container xs={7} justify="space-between">
+                    <Grid
+                      item
+                      container
+                      xs={12}
+                      alignItems="center"
+                      spacing="2"
+                    >
+                      <Grid item xs={4}>
+                        <Typography
+                          align="center"
+                          className={classes.sliderText}
+                        >
+                          1 min
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={8}>
+                        <PrettoSlider fullWidth />
+                      </Grid>
+                    </Grid>
+                    <Grid
+                      item
+                      container
+                      xs={12}
+                      alignItems="center"
+                      spacing="2"
+                    >
+                      <Grid item xs={2} />
+                      <Grid item xs={4}>
+                        <Typography className={classes.sliderText}>
+                          1 min
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={4} />
+                      <Grid item container justify="flex-end" xs={2}>
+                        <Grid>
+                          <Typography className={classes.sliderText}>
+                            1 min
+                          </Typography>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Grid
+                  item
+                  container
+                  xs={12}
+                  justify="space-between"
+                  alignItems="flex-start"
+                  spacing="2"
+                >
+                  <Grid item xs={2} />
+                  <Grid item xs={3}>
+                    <Typography className={classes.settingsText} align="left">
+                      Reset Timer
+                    </Typography>
+                  </Grid>
+                  <Grid item container xs={7} justify="space-between">
+                    <Grid
+                      item
+                      container
+                      xs={12}
+                      alignItems="center"
+                      spacing="2"
+                    >
+                      <Grid item xs={4}>
+                        <Typography
+                          align="center"
+                          className={classes.sliderText}
+                        >
+                          1 min
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={8}>
+                        <PrettoSlider fullWidth />
+                      </Grid>
+                    </Grid>
+                    <Grid
+                      item
+                      container
+                      xs={12}
+                      alignItems="center"
+                      spacing="2"
+                    >
+                      <Grid item xs={2} />
+                      <Grid item xs={4}>
+                        <Typography className={classes.sliderText}>
+                          1 min
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={4} />
+                      <Grid item container justify="flex-end" xs={2}>
+                        <Grid>
+                          <Typography className={classes.sliderText}>
+                            1 min
+                          </Typography>
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Grid
+                  item
+                  container
+                  xs={12}
+                  justify="space-between"
+                  alignItems="center"
+                  spacing="2"
+                >
+                  <Grid item xs={2} />
+                  <Grid item xs={3}>
+                    <Typography className={classes.settingsText} align="left">
+                      Display Wake Settings
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={7} container justify="flex-end">
+                    <IconButton>
+                      <ForwardIcon className={classes.forwardIcon} />
+                    </IconButton>
+                  </Grid>
+                </Grid>
+                <Grid
+                  item
+                  container
+                  xs={12}
+                  justify="space-between"
+                  alignItems="center"
+                  spacing="2"
+                >
+                  <Grid item xs={2} />
+                  <Grid item xs={3}>
+                    <Typography className={classes.settingsText} align="left">
+                      Camera
+                    </Typography>
+                  </Grid>
+                  <Grid
+                    item
+                    xs={7}
+                    container
+                    justify="flex-end"
+                    alignItems="center"
+                  >
+                    <Grid item>
+                      <Typography className={classes.contentText} align="left">
+                        Surface Go
+                      </Typography>
+                    </Grid>
+                    <Grid item>
+                      <IconButton>
+                        <EditIcon className={classes.settingsText} />
+                      </IconButton>
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Grid
+                  item
+                  container
+                  xs={12}
+                  justify="space-between"
+                  alignItems="center"
+                  spacing="2"
+                >
+                  <Grid item xs={2} />
+                  <Grid item xs={3}>
+                    <Typography className={classes.settingsText} align="left">
+                      Printer
+                    </Typography>
+                  </Grid>
+                  <Grid
+                    item
+                    xs={7}
+                    container
+                    justify="flex-end"
+                    alignItems="center"
+                  >
+                    <Grid item>
+                      <Typography className={classes.contentText} align="left">
+                        Oki B4600
+                      </Typography>
+                    </Grid>
+                    <Grid item>
+                      <IconButton>
+                        <EditIcon className={classes.settingsText} />
+                      </IconButton>
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Grid
+                  item
+                  container
+                  xs={12}
+                  justify="space-between"
+                  alignItems="center"
+                  spacing="2"
+                >
+                  <Grid item xs={2} />
+                  <Grid item xs={3}>
+                    <Typography className={classes.settingsText} align="left">
+                      Go to Windows Admin
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={7} container justify="flex-end">
+                    <IconButton>
+                      <ForwardIcon className={classes.forwardIcon} />
+                    </IconButton>
+                  </Grid>
+                </Grid>
               </Grid>
             </Grid>
           </div>
