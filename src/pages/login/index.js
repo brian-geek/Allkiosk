@@ -59,6 +59,7 @@ const AdminLogIn = ({ history, userIsIdle }) => {
     if (adminKey.userName === "paceme999" && adminKey.password === "tempe999") {
       localStorage.setItem("allkiosk_token", "paceme999");
       toastr.success("Login Success.");
+      history.push("/display_settings");
       history.push("/settings");
     } else {
       setAdminKey(initialAdminKey);

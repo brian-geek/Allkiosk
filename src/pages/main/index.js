@@ -2,6 +2,8 @@ import React from "react";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core/styles";
+import IconButton from "@material-ui/core/IconButton";
+import ReplyIcon from "@material-ui/icons/Reply";
 
 const styles = {
   logo: {
@@ -17,7 +19,7 @@ const styles = {
     borderRadius: "25px",
   },
   layout: {
-    height: "80vh",
+    height: "85vh",
   },
 };
 
@@ -45,6 +47,16 @@ const Main = ({ history, userIsIdle }) => {
               className={classes.logo}
               onClick={() => history.push("/")}
             />
+          </Grid>
+          <Grid container justify="center" alignItems="flex-end" item xs={12}>
+            <Grid item>
+              <IconButton>
+                <ReplyIcon
+                  style={{ color: "#3f51b5", fontSize: "75px" }}
+                  onClick={() => history.push("/")}
+                />
+              </IconButton>
+            </Grid>
           </Grid>
         </Grid>
         <Grid

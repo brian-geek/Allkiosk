@@ -1,7 +1,7 @@
 import configData from "./config.json";
 
 export const postBarCodeDetail = async (data) => {
-  return await fetch(`${configData.baseURL}/scanner`, {
+  return await fetch(`${configData.baseURL}/searchjuror/scanner`, {
     method: "Post",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
