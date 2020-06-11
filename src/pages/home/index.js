@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { connect } from "react-redux";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
+
+import { setScannerMode } from "../../redux/actions/scannerActions";
 
 const styles = {
   logo: {
@@ -33,8 +36,13 @@ const styles = {
 
 const useStyles = makeStyles(styles);
 
-const HomePage = ({ history }) => {
+const HomePage = ({ history, setScannerMode }) => {
   const classes = useStyles();
+
+  useEffect(() => {
+    // setScannerMode();
+  }, []);
+
   return (
     <>
       <Grid
@@ -100,4 +108,4 @@ const HomePage = ({ history }) => {
   );
 };
 
-export default HomePage;
+export default connect(null, { setScannerMode })(HomePage);

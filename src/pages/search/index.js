@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { connect } from "react-redux";
+
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
@@ -9,6 +11,7 @@ import IconButton from "@material-ui/core/IconButton";
 
 import { toastr } from "react-redux-toastr";
 import { postJurorDetail } from "../../clients/api";
+import { handleJurorData } from "../../redux/actions/scannerActions";
 
 const styles = {
   logo: {
@@ -40,8 +43,9 @@ const styles = {
 
 const useStyles = makeStyles(styles);
 
-const Search = ({ history, userIsIdle }) => {
+const Search = ({ history, userIsIdle, handleJurorData, jurorData }) => {
   const classes = useStyles();
+  const [status, setStatus] = useState("init");
   const initialSearchInfo = {
     firstName: "",
     lastName: "",
@@ -58,10 +62,13 @@ const Search = ({ history, userIsIdle }) => {
       .then((result) => {
         if (result.status === "success") {
           toastr.success(result.message);
+          handleJurorData(result.jurorData);
           setSearchInfo(initialSearchInfo);
+          setStatus(result.status);
         } else if (result.status === "failed") {
           toastr.error(result.message);
           setSearchInfo(initialSearchInfo);
+          setStatus(result.status);
         }
       });
   };
@@ -99,12 +106,20 @@ const Search = ({ history, userIsIdle }) => {
               src="https://www.tempe.gov/Home/ShowPublishedImage/51838/636936793486770000"
               alt="Court Logo"
               className={classes.logo}
-              onClick={() => history.push("/")}
+              onClick={() => {
+                history.push("/");
+                handleJurorData({});
+              }}
             />
           </Grid>
           <Grid container justify="center" alignItems="flex-end" item xs={12}>
             <Grid item>
-              <IconButton onClick={() => history.push("/main")}>
+              <IconButton
+                onClick={() => {
+                  history.push("/main");
+                  handleJurorData({});
+                }}
+              >
                 <ReplyIcon className={classes.backbtn} />
               </IconButton>
             </Grid>
@@ -118,107 +133,158 @@ const Search = ({ history, userIsIdle }) => {
           alignItems="center"
           className={classes.form}
         >
-          <Grid item container xs={12} justify="center" spacing="5">
-            <Grid item xs={9}>
-              <Typography align="left">First Name</Typography>
-              <TextField
-                type="text"
-                variant="outlined"
-                value={searchInfo.firstName}
-                onChange={(e) =>
-                  setSearchInfo({
-                    ...searchInfo,
-                    firstName: e.target.value === "" ? null : e.target.value,
-                  })
-                }
-                InputProps={{ className: classes.textField }}
-                fullWidth
-              ></TextField>
+          {status === "init" ? (
+            <Grid item container xs={12} justify="center" spacing="5">
+              <Grid item xs={9}>
+                <Typography align="left">First Name</Typography>
+                <TextField
+                  type="text"
+                  variant="outlined"
+                  value={searchInfo.firstName}
+                  onChange={(e) =>
+                    setSearchInfo({
+                      ...searchInfo,
+                      firstName: e.target.value === "" ? null : e.target.value,
+                    })
+                  }
+                  InputProps={{ className: classes.textField }}
+                  fullWidth
+                ></TextField>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography align="left">Last Name</Typography>
+                <TextField
+                  variant="outlined"
+                  type="text"
+                  value={searchInfo.lastName}
+                  onChange={(e) =>
+                    setSearchInfo({
+                      ...searchInfo,
+                      lastName: e.target.value === "" ? null : e.target.value,
+                    })
+                  }
+                  InputProps={{ className: classes.textField }}
+                  fullWidth
+                ></TextField>
+              </Grid>
+              <Grid container item xs={9}>
+                <Typography align="left">Date of Birth</Typography>
+                <TextField
+                  variant="outlined"
+                  type="date"
+                  value={searchInfo.birthDate}
+                  onChange={(e) =>
+                    setSearchInfo({
+                      ...searchInfo,
+                      birthDate: e.target.value === "" ? null : e.target.value,
+                    })
+                  }
+                  InputProps={{ className: classes.textField }}
+                  fullWidth
+                ></TextField>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography align="left">Juror ID</Typography>
+                <TextField
+                  variant="outlined"
+                  type="text"
+                  value={searchInfo.jurorId}
+                  onChange={(e) =>
+                    setSearchInfo({
+                      ...searchInfo,
+                      jurorId: e.target.value === "" ? null : e.target.value,
+                    })
+                  }
+                  InputProps={{ className: classes.textField }}
+                  fullWidth
+                ></TextField>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography align="left">Group ID</Typography>
+                <TextField
+                  variant="outlined"
+                  type="text"
+                  value={searchInfo.groupId}
+                  onChange={(e) =>
+                    setSearchInfo({
+                      ...searchInfo,
+                      groupId: e.target.value === "" ? null : e.target.value,
+                    })
+                  }
+                  InputProps={{ className: classes.textField }}
+                  fullWidth
+                ></TextField>
+              </Grid>
+              <Grid item xs={9}>
+                <br />
+              </Grid>
+              <Grid item xs={9}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  className={classes.btn}
+                  disabled={unableToSearch}
+                  onClick={handleSearch}
+                  fullWidth
+                >
+                  Search
+                </Button>
+              </Grid>
             </Grid>
-            <Grid item xs={9}>
-              <Typography align="left">Last Name</Typography>
-              <TextField
-                variant="outlined"
-                type="text"
-                value={searchInfo.lastName}
-                onChange={(e) =>
-                  setSearchInfo({
-                    ...searchInfo,
-                    lastName: e.target.value === "" ? null : e.target.value,
-                  })
-                }
-                InputProps={{ className: classes.textField }}
-                fullWidth
-              ></TextField>
+          ) : status === "success" ? (
+            <Grid item container xs={12} justify="center" spacing="5">
+              <Grid item xs={9}>
+                <Typography variant="h5" spacing="3">
+                  {jurorData.firstName} {jurorData.lastName}
+                </Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography variant="h5">{jurorData.scheduleTime}</Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  className={classes.btn}
+                  onClick={() => history.push("/confirm")}
+                  fullWidth
+                >
+                  Continue
+                </Button>
+              </Grid>
             </Grid>
-            <Grid container item xs={9}>
-              <Typography align="left">Date of Birth</Typography>
-              <TextField
-                variant="outlined"
-                type="date"
-                value={searchInfo.birthDate}
-                onChange={(e) =>
-                  setSearchInfo({
-                    ...searchInfo,
-                    birthDate: e.target.value === "" ? null : e.target.value,
-                  })
-                }
-                InputProps={{ className: classes.textField }}
-                fullWidth
-              ></TextField>
+          ) : status === "failed" ? (
+            <Grid item container xs={12} justify="center" spacing="3">
+              <Grid item xs={9}>
+                <Typography variant="h5" spacing="3">
+                  Go to Service Counter
+                </Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Typography variant="h5">for Assistance</Typography>
+              </Grid>
+              <Grid item xs={9}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  className={classes.btn}
+                  onClick={() => history.push("/main")}
+                  fullWidth
+                >
+                  Reset
+                </Button>
+              </Grid>
             </Grid>
-            <Grid item xs={9}>
-              <Typography align="left">Juror ID</Typography>
-              <TextField
-                variant="outlined"
-                type="text"
-                value={searchInfo.jurorId}
-                onChange={(e) =>
-                  setSearchInfo({
-                    ...searchInfo,
-                    jurorId: e.target.value === "" ? null : e.target.value,
-                  })
-                }
-                InputProps={{ className: classes.textField }}
-                fullWidth
-              ></TextField>
-            </Grid>
-            <Grid item xs={9}>
-              <Typography align="left">Group ID</Typography>
-              <TextField
-                variant="outlined"
-                type="text"
-                value={searchInfo.groupId}
-                onChange={(e) =>
-                  setSearchInfo({
-                    ...searchInfo,
-                    groupId: e.target.value === "" ? null : e.target.value,
-                  })
-                }
-                InputProps={{ className: classes.textField }}
-                fullWidth
-              ></TextField>
-            </Grid>
-            <Grid item xs={9}>
-              <br />
-            </Grid>
-            <Grid item xs={9}>
-              <Button
-                variant="contained"
-                size="large"
-                className={classes.btn}
-                disabled={unableToSearch}
-                onClick={handleSearch}
-                fullWidth
-              >
-                Search
-              </Button>
-            </Grid>
-          </Grid>
+          ) : null}
         </Grid>
       </Grid>
     </>
   );
 };
 
-export default Search;
+const mapStateToProps = (state) => {
+  const { scanner } = state;
+  return { jurorData: scanner.jurorData };
+};
+
+export default connect(mapStateToProps, { handleJurorData })(Search);
