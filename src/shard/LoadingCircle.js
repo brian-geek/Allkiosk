@@ -8,10 +8,9 @@ const muiStyles = theme => ({
     height: '100%',
     textAlign: 'center',
     verticalAlign: 'center',
-    marginTop: '50px',
   },
   loadingCircle: {
-    opacity: 0.7,
+    opacity: 0.8,
   },
 });
 const LoadingCircle = ({ classes, size }) => {

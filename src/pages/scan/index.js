@@ -1,42 +1,54 @@
-import React, { useEffect, useState } from "react";
-import { connect } from "react-redux";
-import Scanner from "./Scanner";
-import Result from "./Result";
-import Grid from "@material-ui/core/Grid";
-import Button from "@material-ui/core/Button";
-import { toastr } from "react-redux-toastr";
-import { Typography } from "@material-ui/core";
-import { postBarCodeDetail, saveBarCodeDetail } from "../../clients/api";
-import { handleJurorData } from "../../redux/actions/scannerActions";
+import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'redux';
+import Scanner from './Scanner';
+import Result from './Result';
+import Grid from '@material-ui/core/Grid';
+import { withStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
+import { toastr } from 'react-redux-toastr';
+import OutlinedTextField from '../../components/CustomTextField';
+import { Typography } from '@material-ui/core';
+import { postBarCodeDetail, saveBarCodeDetail } from '../../clients/api';
+import { handleJurorData } from '../../redux/actions/scannerActions';
 
-import LoadingCircle from "../../shard/LoadingCircle";
-import ReplyIcon from "@material-ui/icons/Reply";
-import IconButton from "@material-ui/core/IconButton";
+import LoadingCircle from '../../shard/LoadingCircle';
+import ReplyIcon from '@material-ui/icons/Reply';
+import IconButton from '@material-ui/core/IconButton';
 
-const styles = {
+const muiStyles = theme => ({
   logo: {
-    width: "280px",
-    marginTop: "50px",
-    cursor: "pointer",
+    width: '280px',
+    marginTop: '50px',
+    cursor: 'pointer',
+  },
+  // btn: {
+  //   height: '125px',
+  //   backgroundColor: '#3f51b5',
+  //   color: '#fff',
+  //   fontSize: '35px',
+  //   borderRadius: '25px',
+  // },
+  div_message: {
+    maxHeight: '200px',
+    overflowY: 'auto',
+    resize: 'both',
+  },
+  backIcon: { color: '#3f51b5', fontSize: '75px' },
+  sidePanel: {
+    height: '100vh',
+    margin: 'auto',
+  },
+  mainPanel: {
+    margin: 'auto',
   },
   btn: {
-    height: "125px",
-    backgroundColor: "#3f51b5",
-    color: "#fff",
-    fontSize: "35px",
-    borderRadius: "25px",
+    fontSize: '18px',
+    borderRadius: '50px',
   },
-  layout: {
-    height: "80vh",
-  },
-  div_message: {
-    maxHeight: "200px",
-    overflowY: "auto",
-    resize: "both",
-  },
-};
+});
 
-const ScanPage = (props) => {
+const ScanPage = props => {
   const {
     scannerMode,
     jurorData,
@@ -44,13 +56,17 @@ const ScanPage = (props) => {
     userIsIdle,
     setIsTimeOut,
     history,
+    classes,
   } = props;
   const [scanning, setScanning] = useState(true);
-  const [status, setStatus] = useState("waiting");
+  const [status, setStatus] = useState('waiting');
   const [results, setResults] = useState([]);
-  const [scannedResult, setScannedResult] = useState("");
+  const [scannedResult, setScannedResult] = useState('');
   const [enableToSearch, setEnableToSearch] = useState(false);
   const [enableToContinue, setEnableToContinue] = useState(false);
+
+  const [unableToContinue, setUnableToContinue] = useState(true);
+  const [isScanning, setIsScanning] = useState(false);
 
   const inputRef = React.createRef();
 
@@ -66,98 +82,130 @@ const ScanPage = (props) => {
     };
   }
 
-  const setCurrentBarCodeDetail = (result) => {
-    const obj = {
-      text: result,
-    };
-    postBarCodeDetail(obj)
-      .then((res) => res.text())
-      .then((result) => JSON.parse(result))
-      .then((result) => {
-        setStatus("finished");
-        if (result.status === "success") {
-          toastr.success(result.message);
-          setEnableToContinue(true);
-          handleJurorData(result.jurorData);
-        } else if (result.status === "failed") {
-          toastr.error(result.message);
-          setEnableToSearch(true);
-        }
-      })
-      .catch((err) => {
-        throw err;
-      });
-  };
+  // const setCurrentBarCodeDetail = result => {
+  //   const obj = {
+  //     text: result,
+  //   };
+  //   postBarCodeDetail(obj)
+  //     .then(res => res.text())
+  //     .then(result => JSON.parse(result))
+  //     .then(result => {
+  //       setStatus('finished');
+  //       if (result.status === 'success') {
+  //         toastr.success(result.message);
+  //         setEnableToContinue(true);
+  //         setEnableToSearch(false);
+  //         handleJurorData(result.jurorData);
+  //       } else if (result.status === 'failed') {
+  //         toastr.error(result.message);
+  //         setEnableToSearch(true);
+  //         setEnableToContinue(false);
+  //       }
+  //     })
+  //     .catch(err => {
+  //       throw err;
+  //     });
+  // };
 
   const saveCurrentBarCodeDetail = () => {
     const obj = {
-      // format: this.state.results[0].codeResult.format,
-      text: this.state.results[0].codeResult.code,
+      text: results[0].codeResult.code,
     };
     saveBarCodeDetail(obj)
-      .then((res) => res.text())
-      .then((result) => JSON.parse(result))
-      .then((result) => {
-        if (result.status === "success") {
+      .then(res => res.text())
+      .then(result => JSON.parse(result))
+      .then(result => {
+        if (result.status === 'success') {
           toastr.success(result.message);
-        } else if (result.status === "failed") {
+        } else if (result.status === 'failed') {
           toastr.error(result.message);
         }
       })
-      .catch((err) => {
+      .catch(err => {
         throw err;
       });
   };
 
-  const _onDetected = (result) => {
+  const _onDetected = result => {
     const func = () => {
       setTimeout(() => {
         setScanning(true);
-        setStatus("scanning...");
+        setStatus('scanning...');
         setResults([]);
         setEnableToSearch(false);
       }, 2000);
     };
     setIsTimeOut(false);
-    setCurrentBarCodeDetail(result.codeResult.code);
+    // setCurrentBarCodeDetail(result.codeResult.code);
     setResults([result]);
     setScanning(false);
-    setStatus("waiting");
+    setStatus('waiting');
     func();
   };
 
-  const onChange = (value) => {
-    setCurrentBarCodeDetail(value);
+  // const onChange = value => {
+  //   setCurrentBarCodeDetail(value);
+  // };
+
+  // const debounceOnChange = React.useCallback(debounce(onChange, 10), []);
+
+  const submitBarcode = () => {
+    setIsScanning(true);
+    setUnableToContinue(true);
+    const obj = {
+      text: scannedResult,
+    };
+    postBarCodeDetail(obj)
+      .then(res => res.text())
+      .then(result => JSON.parse(result))
+      .then(result => {
+        setStatus('finished');
+        if (result.status === 'success') {
+          toastr.success(result.message);
+          setScannedResult('');
+          setIsScanning(false);
+        } else if (result.status === 'failed') {
+          toastr.error(result.message);
+          setScannedResult('');
+          setIsScanning(false);
+        }
+      })
+      .catch(err => {
+        throw err;
+      });
   };
 
-  const debounceOnChange = React.useCallback(debounce(onChange, 10), []);
+  useEffect(() => {
+    if (scannedResult === '') {
+      setUnableToContinue(true);
+    } else {
+      setUnableToContinue(false);
+    }
+  }, [scannedResult]);
 
   if (userIsIdle) {
-    history.push("/");
+    history.push('/');
+    localStorage.removeItem('allkiosk_token');
   }
 
   return (
     <div
       onClick={() => {
-        inputRef.current.focus();
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
       }}
     >
-      <Grid
-        container
-        xs={12}
-        spacing="2"
-        justify="space-between"
-        alignItems="stretch"
-      >
-        <Grid container item xs={3} justify="column" style={{ height: "85vh" }}>
+      <Grid container xs={12} spacing="2" justify="space-between" alignItems="stretch">
+        <Grid container item xs={3} justify="column" className={classes.sidePanel}>
           <Grid item xs={12}>
             <img
               src="https://www.tempe.gov/Home/ShowPublishedImage/51838/636936793486770000"
               alt="Court Logo"
-              style={styles.logo}
+              className={classes.logo}
               onClick={() => {
                 handleJurorData({});
-                history.push("/");
+                history.push('/');
               }}
             />
           </Grid>
@@ -165,25 +213,18 @@ const ScanPage = (props) => {
             <Grid item>
               <IconButton>
                 <ReplyIcon
-                  style={{ color: "#3f51b5", fontSize: "75px" }}
+                  className={classes.backIcon}
                   onClick={() => {
                     handleJurorData({});
-                    history.push("/main");
+                    history.push('/');
                   }}
                 />
               </IconButton>
             </Grid>
           </Grid>
         </Grid>
-        <Grid
-          container
-          item
-          xs={9}
-          justify="column"
-          alignItems="center"
-          style={{ height: "80vh" }}
-        >
-          {scannerMode === "webcam" ? (
+        <Grid container item xs={9} alignItems="center" className={classes.mainPanel}>
+          {scannerMode === 'webcam' ? (
             <>
               <Grid item container xs={12} justify="center">
                 <Grid item xs={9}>
@@ -198,7 +239,7 @@ const ScanPage = (props) => {
                       {!scanning ? (
                         <Button
                           variant="contained"
-                          onClick={this.saveCurrentBarCodeDetail}
+                          onClick={saveCurrentBarCodeDetail}
                           size="middle"
                         >
                           Save Current Data
@@ -209,43 +250,86 @@ const ScanPage = (props) => {
                        </div> */}
                       <ul className="results">
                         {results.map((result, i) => (
-                          <Result
-                            key={result.codeResult.code + i}
-                            result={result}
-                          />
+                          <Result key={result.codeResult.code + i} result={result} />
                         ))}
                       </ul>
                     </div>
-                    <div style={{ height: "480px" }}>
+                    <div style={{ height: '480px' }}>
                       {scanning ? <Scanner onDetected={_onDetected} /> : null}
                     </div>
                   </div>
                 </Grid>
               </Grid>
             </>
-          ) : scannerMode === "scanner" ? (
+          ) : scannerMode === 'scanner' ? (
             <Grid item container xs={12} justify="center">
-              <Grid item>
-                <input
+              <Grid item xs={8}>
+                <OutlinedTextField
                   autoFocus
-                  ref={inputRef}
+                  inputRef={inputRef}
                   value={scannedResult}
-                  onChange={(e) => {
-                    debounceOnChange(e.target.value);
-                    setScannedResult(e.target.value);
+                  onChange={value => {
+                    // debounceOnChange(e.target.value);
+                    setScannedResult(value);
                   }}
-                  style={{ opacity: 0 }}
+                  placeholder="Scan Barcode here or enter manually."
                 />
+              </Grid>
+              <Grid item container>
+                <br />
+                <br />
+                <br />
+              </Grid>
+              <Grid item xs={8}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  color="primary"
+                  className={classes.btn}
+                  onClick={submitBarcode}
+                  disabled={unableToContinue}
+                  fullWidth
+                >
+                  {isScanning ? (
+                    <LoadingCircle size={20} />
+                  ) : (
+                    <Typography variant="h6" align="center" fullWidth>
+                      Submit Barcode
+                    </Typography>
+                  )}
+                </Button>
+              </Grid>
+
+              <Grid item container>
+                <br />
+                <br />
+                <br />
+              </Grid>
+              <Grid item xs={8}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  color="primary"
+                  className={classes.btn}
+                  onClick={() => history.push('/search')}
+                  fullWidth
+                >
+                  Verify With Juror Information
+                </Button>
               </Grid>
             </Grid>
           ) : null}
           <Grid item container xs={12} justify="center" spacing="3">
-            <Grid item xs={12}>
-              <Typography variant="h6" align="center" fullWidth>
-                {status === "finished" ? null : status}
-              </Typography>
-            </Grid>
-            {status === "waiting" ? <LoadingCircle size={110} /> : null}
+            {/* {scannerMode === 'scanner' ? (
+              <>
+                <Grid item xs={12}>
+                  <Typography variant="h6" align="center" fullWidth>
+                    {status === 'finished' ? null : status}
+                  </Typography>
+                </Grid>
+                {status === 'waiting' ? <LoadingCircle size={110} /> : null}
+              </>
+            ) : scannerMode === 'webcam' ? null : null} */}
             <Grid item xs={9}>
               {enableToSearch && (
                 <Grid container justify="center" direction="column" spacing="5">
@@ -254,15 +338,15 @@ const ScanPage = (props) => {
                       variant="contained"
                       size="large"
                       style={{
-                        backgroundColor: "#3f51b5",
-                        color: "#fff",
-                        fontSize: "25px",
-                        borderRadius: "50px",
+                        backgroundColor: '#3f51b5',
+                        color: '#fff',
+                        fontSize: '25px',
+                        borderRadius: '50px',
                       }}
                       onClick={() => {
-                        setScannedResult("");
+                        setScannedResult('');
                         setEnableToSearch(false);
-                        setStatus("waiting");
+                        setStatus('waiting');
                         inputRef.current.focus();
                       }}
                       fullWidth
@@ -275,12 +359,12 @@ const ScanPage = (props) => {
                       variant="contained"
                       size="large"
                       style={{
-                        backgroundColor: "#3f51b5",
-                        color: "#fff",
-                        fontSize: "25px",
-                        borderRadius: "50px",
+                        backgroundColor: '#3f51b5',
+                        color: '#fff',
+                        fontSize: '25px',
+                        borderRadius: '50px',
                       }}
-                      onClick={() => history.push("/search")}
+                      onClick={() => history.push('/search')}
                       fullWidth
                     >
                       Search By ID
@@ -296,21 +380,19 @@ const ScanPage = (props) => {
                     </Typography>
                   </Grid>
                   <Grid item xs={12}>
-                    <Typography variant="h5">
-                      {jurorData.scheduleTime}
-                    </Typography>
+                    <Typography variant="h5">{jurorData.scheduleTime}</Typography>
                   </Grid>
                   <Grid item xs={12}>
                     <Button
                       variant="contained"
                       size="large"
                       style={{
-                        backgroundColor: "#3f51b5",
-                        color: "#fff",
-                        fontSize: "25px",
-                        borderRadius: "50px",
+                        backgroundColor: '#3f51b5',
+                        color: '#fff',
+                        fontSize: '25px',
+                        borderRadius: '50px',
                       }}
-                      onClick={() => history.push("/confirm")}
+                      onClick={() => history.push('/confirm')}
                       fullWidth
                     >
                       Continue
@@ -326,9 +408,16 @@ const ScanPage = (props) => {
   );
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   const { scanner } = state;
-  return { scannerMode: scanner.scannerMode, jurorData: scanner.jurorData };
+  return {
+    scannerMode: scanner.scannerMode,
+    jurorData: scanner.jurorData,
+    scanner: scanner,
+  };
 };
 
-export default connect(mapStateToProps, { handleJurorData })(ScanPage);
+export default compose(
+  connect(mapStateToProps, { handleJurorData }),
+  withStyles(muiStyles)
+)(ScanPage);
