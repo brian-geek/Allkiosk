@@ -29,6 +29,7 @@ const Main = ({ history, userIsIdle }) => {
   const classes = useStyles();
   if (userIsIdle) {
     history.push("/");
+    localStorage.removeItem("allkiosk_token");
   }
   return (
     <>

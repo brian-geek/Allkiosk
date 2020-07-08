@@ -1,7 +1,7 @@
-export const userIsIdle = () => ({
+export const userIsIdle = () => (dispatch) => ({
   type: "USERISIDLE",
 });
 
-export const userIsActive = () => ({
+export const userIsActive = () => (dispatch) => ({
   type: "USERISACTIVE",
 });

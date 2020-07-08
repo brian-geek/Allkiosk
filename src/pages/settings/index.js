@@ -1,107 +1,129 @@
-import React, { useState } from "react";
-import Grid from "@material-ui/core/Grid";
-import { makeStyles } from "@material-ui/core/styles";
-import { Typography } from "@material-ui/core";
+import React, { useState, useEffect } from 'react';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
+import { Typography } from '@material-ui/core';
 // import TextField from "@material-ui/core/TextField";
-import EditIcon from "@material-ui/icons/Edit";
-import ForwardIcon from "@material-ui/icons/Forward";
-import IconButton from "@material-ui/core/IconButton";
-import ReplyIcon from "@material-ui/icons/Reply";
+import EditIcon from '@material-ui/icons/Edit';
+import ForwardIcon from '@material-ui/icons/Forward';
+import IconButton from '@material-ui/core/IconButton';
+import ReplyIcon from '@material-ui/icons/Reply';
 
-import { connect } from "react-redux";
-import { PrettoSlider } from "../../shard/PrettoSlider";
+import { connect } from 'react-redux';
+import ScannerModal from './scannerModal';
+import { setSettingsInfo } from '../../clients/api';
+import { PrettoSlider } from '../../shard/PrettoSlider';
 
 const styles = {
   logo: {
-    width: "280px",
-    marginTop: "50px",
-    cursor: "pointer",
+    width: '280px',
+    marginTop: '50px',
+    cursor: 'pointer',
   },
   layout: {
-    height: "110vh",
-    width: "100%",
-    backgroundColor: "#3f51b5",
+    width: '100%',
+    backgroundColor: '#3f51b5',
     opacity: 0.9,
   },
   headerText: {
-    color: "#fff",
-    fontSize: "35px",
+    color: '#fff',
+    fontSize: '35px',
     fontWeight: 500,
   },
   contentText: {
-    color: "#fff",
+    color: '#fff',
     fontWeight: 500,
-    fontSize: "18px",
+    fontSize: '18px',
   },
   settingsText: {
-    color: "#fff",
+    color: '#fff',
     fontWeight: 500,
-    fontSize: "21px",
+    fontSize: '21px',
   },
   forwardIcon: {
-    color: "#fff",
-    fontSize: "28px",
+    color: '#fff',
+    fontSize: '28px',
   },
   sliderText: {
-    color: "#fff",
+    color: '#fff',
+  },
+  sidePanel: {
+    height: '100vh',
+    margin: 'auto',
+  },
+  mainPanel: {
+    margin: 'auto',
+  },
+  backbtn: {
+    color: '#3f51b5',
+    fontSize: '75px',
   },
 };
 
 const useStyles = makeStyles(styles);
 
-const Settings = ({ history, userIsIdle, scannerMode }) => {
+const Settings = ({ history, userIsIdle, settingsInfo }) => {
   const classes = useStyles();
-  const [idleTime, setIdleTime] = useState(0.5);
-  const [resetTime, setResetTime] = useState(5);
+  const [open, setOpen] = useState(false);
+  const [settingsData, setSettingsData] = useState({});
+  const [resetTime, setResetTime] = useState();
+  const [idleTime, setIdleTime] = useState();
 
-  const foramtIdleTime = (idleTime) => {
+  const formatIdleTime = idleTime => {
     const idleMin = idleTime - (idleTime % 1);
-    const idleSec = idleTime % 1;
+    const idleSec = (idleTime % 1) * 60;
     if (idleSec === 0) {
       return `${idleTime} min`;
     } else {
       if (idleMin === 0) {
-        return `${(idleSec * 60).toFixed(0)} sec`;
+        return `${idleSec.toFixed(0)} sec`;
       } else {
-        return `${idleMin} min ${(idleSec * 60).toFixed(0)} sec`;
+        return `${idleMin} min ${idleSec.toFixed(0)} sec`;
       }
     }
   };
 
+  const SubmitSettings = () => {
+    history.push('/');
+  };
+
   if (userIsIdle) {
-    history.push("/");
-    localStorage.removeItem("allkiosk_token");
+    history.push('/');
+    localStorage.removeItem('allkiosk_token');
   }
+
+  useEffect(() => {
+    setSettingsData(settingsInfo);
+    setResetTime((settingsInfo.resetTime - 5) * 4);
+    setIdleTime(((settingsInfo.idleTime - 0.5) * 100) / 4.5);
+  }, [settingsInfo]);
+
   return (
     <>
-      <Grid
-        container
-        xs={12}
-        spacing="2"
-        justify="space-between"
-        alignItems="stretch"
-      >
-        <Grid container item xs={3} justify="column" style={{ height: "85vh" }}>
+      <Grid container xs={12} spacing="2" justify="space-between" alignItems="stretch">
+        <Grid container item xs={3} justify="column" className={classes.sidePanel}>
           <Grid item xs={12}>
             <img
               src="https://www.tempe.gov/Home/ShowPublishedImage/51838/636936793486770000"
               alt="Court Logo"
-              style={styles.logo}
-              onClick={() => history.push("/")}
+              className={classes.logo}
+              onClick={() => {
+                history.push('/');
+              }}
             />
           </Grid>
           <Grid container justify="center" alignItems="flex-end" item xs={12}>
             <Grid item>
-              <IconButton>
-                <ReplyIcon
-                  style={{ color: "#3f51b5", fontSize: "75px" }}
-                  onClick={() => history.push("/")}
-                />
+              <IconButton
+                onClick={() => {
+                  history.push('/scan');
+                }}
+              >
+                <ReplyIcon className={classes.backbtn} />
               </IconButton>
             </Grid>
           </Grid>
         </Grid>
-        <Grid item container xs={9}>
+        <Grid item container xs={9} className={classes.mainPanel}>
           <div className={classes.layout}>
             <Grid container item xs={12} alignItems="center" spacing="10">
               <Grid item container xs={12} justify="center">
@@ -110,9 +132,7 @@ const Settings = ({ history, userIsIdle, scannerMode }) => {
                     <br />
                     <br />
                     <br />
-                    <Typography className={classes.headerText}>
-                      SETTINGS
-                    </Typography>
+                    <Typography className={classes.headerText}>SETTINGS</Typography>
                   </Grid>
                 </Grid>
               </Grid>
@@ -132,49 +152,35 @@ const Settings = ({ history, userIsIdle, scannerMode }) => {
                     </Typography>
                   </Grid>
                   <Grid item container xs={7} justify="space-between">
-                    <Grid
-                      item
-                      container
-                      xs={12}
-                      alignItems="center"
-                      spacing="2"
-                    >
+                    <Grid item container xs={12} alignItems="center" spacing="2">
                       <Grid item xs={4}>
-                        <Typography
-                          align="center"
-                          className={classes.sliderText}
-                        >
-                          {foramtIdleTime(idleTime)}
+                        <Typography align="center" className={classes.sliderText}>
+                          {formatIdleTime(settingsData.idleTime)}
                         </Typography>
                       </Grid>
                       <Grid item xs={8}>
                         <PrettoSlider
-                          onChange={(e, newValue) =>
-                            setIdleTime(0.5 + (4.5 * newValue) / 100)
-                          }
+                          onChange={(e, newValue) => {
+                            setIdleTime(newValue);
+                            setSettingsData({
+                              ...settingsData,
+                              idleTime: (0.5 + (4.5 * newValue) / 100).toFixed(2),
+                            });
+                          }}
+                          value={Number(idleTime)}
                           fullWidth
                         />
                       </Grid>
                     </Grid>
-                    <Grid
-                      item
-                      container
-                      xs={12}
-                      alignItems="center"
-                      spacing="2"
-                    >
+                    <Grid item container xs={12} alignItems="center" spacing="2">
                       <Grid item xs={2} />
                       <Grid item xs={4}>
-                        <Typography className={classes.sliderText}>
-                          30 s
-                        </Typography>
+                        <Typography className={classes.sliderText}>30 s</Typography>
                       </Grid>
                       <Grid item xs={4} />
                       <Grid item container justify="flex-end" xs={2}>
                         <Grid>
-                          <Typography className={classes.sliderText}>
-                            5 min
-                          </Typography>
+                          <Typography className={classes.sliderText}>5 min</Typography>
                         </Grid>
                       </Grid>
                     </Grid>
@@ -195,50 +201,36 @@ const Settings = ({ history, userIsIdle, scannerMode }) => {
                     </Typography>
                   </Grid>
                   <Grid item container xs={7} justify="space-between">
-                    <Grid
-                      item
-                      container
-                      xs={12}
-                      alignItems="center"
-                      spacing="2"
-                    >
+                    <Grid item container xs={12} alignItems="center" spacing="2">
                       <Grid item xs={4}>
-                        <Typography
-                          align="center"
-                          className={classes.sliderText}
-                        >
-                          {`${resetTime} s`}
+                        <Typography align="center" className={classes.sliderText}>
+                          {`${settingsData.resetTime} s`}
                         </Typography>
                       </Grid>
                       <Grid item xs={8}>
                         <PrettoSlider
-                          onChange={(e, newValue) =>
-                            setResetTime(5 + (25 * newValue) / 100)
-                          }
+                          onChange={(e, newValue) => {
+                            setResetTime(newValue);
+                            setSettingsData({
+                              ...settingsData,
+                              resetTime: 5 + (25 * newValue) / 100,
+                            });
+                          }}
+                          value={Number(resetTime)}
                           aria-labelledby="input-slider"
                           fullWidth
                         />
                       </Grid>
                     </Grid>
-                    <Grid
-                      item
-                      container
-                      xs={12}
-                      alignItems="center"
-                      spacing="2"
-                    >
+                    <Grid item container xs={12} alignItems="center" spacing="2">
                       <Grid item xs={2} />
                       <Grid item xs={4}>
-                        <Typography className={classes.sliderText}>
-                          5 s
-                        </Typography>
+                        <Typography className={classes.sliderText}>5 s</Typography>
                       </Grid>
                       <Grid item xs={4} />
                       <Grid item container justify="flex-end" xs={2}>
                         <Grid>
-                          <Typography className={classes.sliderText}>
-                            30 s
-                          </Typography>
+                          <Typography className={classes.sliderText}>30 s</Typography>
                         </Grid>
                       </Grid>
                     </Grid>
@@ -262,7 +254,7 @@ const Settings = ({ history, userIsIdle, scannerMode }) => {
                     <IconButton>
                       <ForwardIcon
                         className={classes.forwardIcon}
-                        onClick={() => history.push("/display_settings")}
+                        onClick={() => history.push('/display_settings')}
                       />
                     </IconButton>
                   </Grid>
@@ -281,20 +273,14 @@ const Settings = ({ history, userIsIdle, scannerMode }) => {
                       Camera
                     </Typography>
                   </Grid>
-                  <Grid
-                    item
-                    xs={7}
-                    container
-                    justify="flex-end"
-                    alignItems="center"
-                  >
+                  <Grid item xs={7} container justify="flex-end" alignItems="center">
                     <Grid item>
                       <Typography className={classes.contentText} align="left">
                         Surface Go
                       </Typography>
                     </Grid>
                     <Grid item>
-                      <IconButton>
+                      <IconButton onClick={() => setOpen(true)}>
                         <EditIcon className={classes.settingsText} />
                       </IconButton>
                     </Grid>
@@ -314,13 +300,7 @@ const Settings = ({ history, userIsIdle, scannerMode }) => {
                       Printer
                     </Typography>
                   </Grid>
-                  <Grid
-                    item
-                    xs={7}
-                    container
-                    justify="flex-end"
-                    alignItems="center"
-                  >
+                  <Grid item xs={7} container justify="flex-end" alignItems="center">
                     <Grid item>
                       <Typography className={classes.contentText} align="left">
                         Oki B4600
@@ -358,13 +338,14 @@ const Settings = ({ history, userIsIdle, scannerMode }) => {
           </div>
         </Grid>
       </Grid>
+      <ScannerModal open={open} handleClose={() => setOpen(false)} />
     </>
   );
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   const { scanner } = state;
-  return { scannerMode: scanner.scannerMode };
+  return { settingsInfo: Object.assign({}, scanner) };
 };
 
 export default connect(mapStateToProps, null)(Settings);

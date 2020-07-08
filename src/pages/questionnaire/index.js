@@ -72,6 +72,7 @@ const QuestionPage = ({ history, handleJurorData, jurorData, userIsIdle }) => {
   const classes = useStyles();
   if (userIsIdle || !jurorData.text) {
     history.push("/");
+    localStorage.removeItem("allkiosk_token");
   }
 
   const [unableToSubmit, setUnableToSubmit] = useState(true);

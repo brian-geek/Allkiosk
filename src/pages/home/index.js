@@ -1,35 +1,35 @@
-import React, { useEffect } from "react";
-import { connect } from "react-redux";
-import Grid from "@material-ui/core/Grid";
-import { makeStyles } from "@material-ui/core/styles";
-import { Typography } from "@material-ui/core";
+import React, { useEffect } from 'react';
+import { connect } from 'react-redux';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
+import { Typography } from '@material-ui/core';
 
-import { setScannerMode } from "../../redux/actions/scannerActions";
+import { setScannerMode } from '../../redux/actions/scannerActions';
 
 const styles = {
   logo: {
-    width: "280px",
-    marginTop: "50px",
-    cursor: "pointer",
+    width: '280px',
+    marginTop: '50px',
+    cursor: 'pointer',
   },
   layout: {
-    height: "110vh",
-    width: "100%",
-    backgroundColor: "#3f51b5",
+    height: '110vh',
+    width: '100%',
+    backgroundColor: '#3f51b5',
     opacity: 0.9,
-    cursor: "pointer",
+    cursor: 'pointer',
   },
   container: {
-    height: "100vh",
+    height: '100vh',
   },
   titleText: {
-    color: "#fff",
-    fontSize: "70px",
+    color: '#fff',
+    fontSize: '70px',
     fontWeight: 800,
   },
   bottomText: {
-    color: "#fff",
-    fontSize: "35px",
+    color: '#fff',
+    fontSize: '35px',
     fontWeight: 500,
   },
 };
@@ -45,20 +45,14 @@ const HomePage = ({ history, setScannerMode }) => {
 
   return (
     <>
-      <Grid
-        container
-        xs={12}
-        spacing="2"
-        justify="space-between"
-        alignItems="stretch"
-      >
+      <Grid container xs={12} spacing="2" justify="space-between" alignItems="stretch">
         <Grid container item xs={3} justify="column">
           <Grid item xs={12}>
             <img
               src="https://www.tempe.gov/Home/ShowPublishedImage/51838/636936793486770000"
               alt="Court Logo"
               className={classes.logo}
-              onClick={() => history.push("/")}
+              onClick={() => history.push('/')}
             />
           </Grid>
           <Grid item container xs={12} justify="center" alignItems="center">
@@ -66,8 +60,8 @@ const HomePage = ({ history, setScannerMode }) => {
               <div
                 className="gear"
                 id="gear2"
-                style={{ cursor: "pointer" }}
-                onClick={() => history.push("/settings")}
+                style={{ cursor: 'pointer' }}
+                onClick={() => history.push('/settings')}
               />
             </Grid>
           </Grid>
@@ -81,23 +75,17 @@ const HomePage = ({ history, setScannerMode }) => {
               justify="column"
               alignItems="center"
               className={classes.container}
-              onClick={() => history.push("/main")}
+              onClick={() => history.push('/scan')}
             >
               <Grid item container xs={12} justify="center">
                 <Grid item>
-                  <Typography className={classes.titleText}>
-                    JURY DUTY
-                  </Typography>
-                  <Typography className={classes.titleText}>
-                    CHECK-IN
-                  </Typography>
+                  <Typography className={classes.titleText}>JURY DUTY</Typography>
+                  <Typography className={classes.titleText}>CHECK-IN</Typography>
                 </Grid>
               </Grid>
               <Grid item container xs={12} justify="center">
                 <Grid item>
-                  <Typography className={classes.bottomText}>
-                    TAP HERE TO CONTINUE
-                  </Typography>
+                  <Typography className={classes.bottomText}>TAP HERE TO CONTINUE</Typography>
                 </Grid>
               </Grid>
             </Grid>
